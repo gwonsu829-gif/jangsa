@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>전국 천하장사</title>
+<meta property="og:title" content="전국 천하장사">
+<meta property="og:description" content="우리 지역 순위 보고, 샅바 싸움 한 판! 댓글로 겨루는 17개 시도 씨름 대회">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://gwonsu829-gif.github.io/jangsa/">
+<meta property="og:image" content="https://gwonsu829-gif.github.io/jangsa/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="og.png">
+<meta name="description" content="댓글로 겨루는 17개 시도 씨름 대회. 오늘 대진, 순위, 우리 지역 댓글왕, 샅바 싸움 게임.">
+<style>
+/* 릴스와 같은 테마: 갈무리 픽셀 글꼴, 한지·먹선, 청·홍 샅바, 오방색, 초록 마당 */
+@font-face{font-family:G11;src:url(Galmuri11-Bold.woff2)}
+:root{--paper:#fff8e6;--ink:#2b1d14;--hong:#e8372f;--cheong:#2f6fe0;--seal:#c8321e;--gold:#f2c14e;--yel:#ffe14d;--dark:#1a1430;--sub:#7a6652;--hud:#5a1f14}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:15px/1.6 G11,"Malgun Gothic",sans-serif;background:#2a8f7e repeating-linear-gradient(#2a8f7e 0 14px,#237a6c 14px 16px)}
+canvas{image-rendering:pixelated;display:block}
+#sky{width:100%;max-width:720px;margin:0 auto}
+.hud{background:var(--hud);border-top:3px solid var(--dark);color:#fff;text-align:center;padding:8px 16px 10px;position:relative}
+.hud::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:4px;background:linear-gradient(90deg,var(--hong) 0 20%,#ffd34d 20% 40%,var(--cheong) 40% 60%,#fff 60% 80%,#17a88a 80%)}
+.hud b{color:var(--yel);font-weight:400;font-variant-numeric:tabular-nums}
+main{max-width:560px;margin:0 auto;padding:4px 16px 48px}
+h2{margin:30px 0 12px;background:var(--paper);border:3px solid var(--ink);border-left:9px solid var(--cheong);border-right:9px solid var(--hong);text-align:center;font-size:19px;font-weight:400;padding:4px 8px;box-shadow:4px 4px 0 rgba(26,20,48,.45)}
+.card{background:var(--paper);border:3px solid var(--ink);padding:14px;box-shadow:4px 4px 0 rgba(26,20,48,.45)}
+.king{margin-top:18px;background:var(--dark);border:3px solid var(--gold);outline:3px solid var(--dark);color:#fff;padding:10px 14px;text-align:center}
+.king b{color:var(--yel);font-weight:400}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:flex;align-items:center;gap:4px;font:inherit;color:var(--ink);background:#fff;border:3px solid var(--ink);padding:2px 10px 2px 2px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+.chip[aria-pressed=true]{background:var(--yel);transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.ic{width:28px;height:28px;flex:none}
+.ic.l{width:56px;height:56px}
+.seal{display:inline-block;white-space:nowrap;background:var(--seal);color:var(--paper);border:2px solid var(--ink);font-size:12px;padding:0 5px;margin-left:4px;vertical-align:middle;line-height:1.5}
+.me{margin-top:14px;display:none;border-top:3px dashed var(--ink);padding-top:12px}
+.me.on{display:block}
+.mehead{display:flex;align-items:center;gap:10px}
+.mehead .big{font-size:26px;margin:0;line-height:1.2}
+.shout{margin:12px 0 2px;background:#fff;border:3px solid var(--ink);padding:6px 10px;font-size:18px;position:relative}
+.row{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-top:2px dotted #d9c9a8}
+.row:first-of-type{border-top:0}
+.row b{text-align:right;font-weight:400;color:var(--seal)}
+.btns{display:flex;gap:10px;margin-top:14px}
+.btn{flex:1;display:block;text-align:center;text-decoration:none;font:inherit;font-size:16px;color:var(--ink);background:#fff;border:3px solid var(--ink);padding:10px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.go{background:var(--hong);color:#fff}
+.bout{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;padding:8px 0;border-top:2px dotted #d9c9a8}
+.bout:first-child{border-top:0}
+.side{display:flex;align-items:center;gap:6px}
+.side.r{flex-direction:row-reverse;text-align:right}
+.side small{display:block;color:var(--sub);font-size:11px;line-height:1.3}
+.vs{color:var(--seal);font-size:20px}
+.cls{margin:14px 0 6px}
+.cls:first-child{margin-top:0}
+.cls span{background:var(--seal);color:var(--paper);border:2px solid var(--ink);padding:1px 8px}
+.rk{display:grid;grid-template-columns:24px 28px 1fr;gap:6px;padding:3px 4px;align-items:center}
+.rk .n{color:var(--sub)}
+.rk .k{display:block;color:var(--sub);font-size:11px;line-height:1.3;overflow-wrap:anywhere}
+.snd{font:inherit;font-size:13px;color:var(--sub);background:none;border:0;text-decoration:underline;cursor:pointer;padding:4px}
+.share{display:none}
+.share.on{display:flex}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.stamp{text-align:center;color:#e6fff8;font-size:12px;margin:10px 0 0}
+.hl{background:var(--yel);outline:2px solid var(--ink)}
+ul{margin:0;padding-left:20px}
+li{margin:4px 0}
+.eps{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}
+.muted{color:var(--sub);font-size:13px}
+.note{color:#e6fff8;font-size:13px;margin:10px 2px 0}
+#ring{width:100%;border:3px solid var(--ink)}
+#gtap{touch-action:manipulation;user-select:none;-webkit-user-select:none;font-size:20px}
+footer{text-align:center;color:#e6fff8;font-size:13px;margin-top:36px}
+</style>
+</head>
+<body>
+<header>
+  <canvas id="sky" width="360" height="176" role="img" aria-label="전국 천하장사: 1위와 2위가 샅바를 맞잡은 씨름장"></canvas>
+  <div class="hud">오늘 판 마감까지 <b id="clock">--:--:--</b></div>
+</header>
+<main>
+  <p class="stamp" id="stamp"></p>
+  <div class="king" id="top"></div>
+
+  <h2>우리 지역 고르기</h2>
+  <div class="card">
+    <div class="chips" id="pick"></div>
+    <div class="me" id="me"></div>
+  </div>
+
+  <h2>직접 해보기! 샅바 싸움</h2>
+  <div class="card">
+    <canvas id="ring" width="360" height="300" role="img" aria-label="샅바 싸움 게임 화면, 눌러도 밀어요"></canvas>
+    <p class="sr" id="glive" aria-live="polite"></p>
+    <p class="muted" style="margin:10px 0 0">버튼을 마구 눌러 상대를 끝까지 밀어붙이고, 바늘이 금색 칸에 오면 한 번 더 눌러 메치세요. 세 판 중 두 판을 먼저 이기면 승리!</p>
+    <div class="btns"><button class="btn" id="gopp">상대 바꾸기</button><button class="btn go" id="gtap">시작</button></div>
+    <div class="btns share" id="gshare"><button class="btn" id="gsh">자랑하기</button><a class="btn go" id="gcm" target="_blank" rel="noopener">댓글로 응원</a></div>
+    <p class="muted" id="grec" style="margin:8px 0 0;text-align:center"></p>
+    <p style="margin:6px 0 0;text-align:center"><button class="snd" id="gsnd" aria-pressed="true">소리 켜짐</button></p>
+  </div>
+
+  <h2>오늘의 여덟 판</h2>
+  <div class="card" id="bouts"></div>
+  <p class="note">아래 순위 지역의 힘이 더 크면 자리를 바꿉니다. 결과는 자정 마감 뒤 릴스로 발표돼요.</p>
+
+  <h2>지금 순위</h2>
+  <div class="card" id="rank"></div>
+
+  <h2>오늘의 이벤트</h2>
+  <div class="card" id="ev"></div>
+
+  <h2>규칙</h2>
+  <div class="card">
+    <ul>
+      <li>릴스 댓글에 내 지역 이름을 적으면 힘 1</li>
+      <li>팔로워가 단 댓글은 힘 2</li>
+      <li>바로 위 순위 지역과 붙어서 힘이 더 크면 자리를 바꿔요</li>
+      <li>1~4위 백두급, 5~8위 한라급, 9~12위 금강급, 13~17위 태백급</li>
+      <li>지역 비하 댓글은 지웁니다</li>
+    </ul>
+  </div>
+
+  <h2>지난 화 보기</h2>
+  <div class="eps" id="eps"></div>
+
+  <footer>@jeonguk.jangsa · 매일 밤 12시 마감</footer>
+</main>
+<script src="data.js"></script>
+<script src="sprites.js"></script>
+<script>
+const D = window.D, $ = id => document.getElementById(id), N = n => Number(n || 0).toLocaleString('ko-KR');
+const CLS = i => i < 4 ? '백두급' : i < 8 ? '한라급' : i < 12 ? '금강급' : '태백급';
+const col = k => D.factions[k].color, rankOf = k => D.order.indexOf(k);
+const reel = c => 'https://www.instagram.com/reel/' + c + '/';
+const latest = reel(D.reels[D.reels.length - 1]);
+const tag = k => D.boost[k] ? `<span class="seal">${D.boost[k] === 2 ? '응원 x2' : '설욕 x1.5'}</span>` : '';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// 지역 캐릭터 아이콘: 릴스와 같은 픽셀 캐릭터
+const icon = (k, big) => `<canvas class="ic${big ? ' l' : ''}" data-k="${k}" width="20" height="20"></canvas>`;
+function paintIcons(root) { root.querySelectorAll('canvas.ic').forEach(c => c.getContext('2d').drawImage(SPRITE(c.dataset.k, 0, 1), 0, 0)); }
+
+function tick() {
+  const kst = new Date(Date.now() + 9 * 3600e3);
+  const s = 86399 - (kst.getUTCHours() * 3600 + kst.getUTCMinutes() * 60 + kst.getUTCSeconds()), p = n => String(n).padStart(2, '0');
+  $('clock').textContent = `${p(Math.floor(s / 3600))}:${p(Math.floor(s / 60) % 60)}:${p(s % 60)}`;
+}
+tick(); setInterval(tick, 1000);
+
+$('stamp').textContent = `${D.reels.length}화 결과까지 반영 · 매일 결과 릴스가 올라오면 바뀌어요`;
+$('top').innerHTML = D.top.id ? `어젯밤 전체 댓글왕<br><b>${esc(D.top.region)} @${esc(D.top.id)}</b> 님 · 혼자 <b>${N(D.top.count)}</b>개` : '';
+
+$('bouts').innerHTML = D.pairs.map(([a, b]) => `
+  <div class="bout">
+    <div class="side">${icon(a)}<div>${a}${tag(a)}<small>${rankOf(a) + 1}위 · 힘 ${N(D.power[a])}</small></div></div>
+    <div class="vs">VS</div>
+    <div class="side r">${icon(b)}<div>${tag(b)}${b}<small>${rankOf(b) + 1}위 · 힘 ${N(D.power[b])}</small></div></div>
+  </div>`).join('') + (D.rest ? `<p class="muted" style="margin:10px 0 0">오늘 쉬는 지역: ${D.rest}</p>` : '');
+
+let prev = '';
+$('rank').innerHTML = D.order.map((k, i) => {
+  const c = CLS(i), head = c !== prev ? `<div class="cls"><span>${c}</span></div>` : ''; prev = c;
+  const king = D.kings[k] && D.kings[k].users && D.kings[k].users[0];
+  return head + `<div class="rk" data-k="${k}"><span class="n">${i + 1}</span>${icon(k)}<span>${k}${tag(k)}${king ? '<span class="k">댓글왕 @' + esc(king) + '</span>' : ''}</span></div>`;
+}).join('');
+
+$('ev').innerHTML = `<ul>
+  ${D.cheer ? `<li><span class="seal" style="margin:0">응원 지역 룰렛</span> ${D.cheer} 오늘 힘 2배</li>` : ''}
+  ${D.revenge.length ? `<li><span class="seal" style="margin:0">설욕전</span> 두 판 연속 진 ${D.revenge.join(', ')} 오늘 힘 1.5배</li>` : ''}
+  <li>응원 지역은 매일 태백급 중에서 룰렛으로 뽑아요</li></ul>`;
+
+$('eps').innerHTML = D.reels.map((c, i) => `<a class="btn" href="${reel(c)}" target="_blank" rel="noopener">${i + 1}화</a>`).join('');
+
+let mine = null; try { mine = localStorage.getItem('jangsa_me'); } catch (e) {}
+function show(k) {
+  try { localStorage.setItem('jangsa_me', k); } catch (e) {}
+  if (window.setPlayer) setPlayer(k);
+  document.querySelectorAll('#pick .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === k));
+  document.querySelectorAll('#rank .rk').forEach(r => r.classList.toggle('hl', r.dataset.k === k));
+  const f = D.factions[k], i = rankOf(k), pair = D.pairs.find(p => p.includes(k)), opp = pair && pair.find(x => x !== k);
+  const last = D.matches.find(m => m.a === k || m.b === k), king = D.kings[k];
+  const res = last ? (last.winner === k ? (last.swap ? '이겨서 순위 올림' : '이겨서 자리 지킴') : (last.swap ? '져서 순위 내려감' : '졌지만 자리 유지')) : '어젯밤엔 쉬었어요';
+  const fight = opp ? `${opp} (${rankOf(opp) + 1}위)` : '오늘은 쉬어요';
+  $('me').innerHTML = `
+    <div class="mehead">${icon(k, 1)}<div><p class="big">${k}${tag(k)}</p><div class="muted">${i + 1}위 · ${CLS(i)} · 특산물 ${esc(f.item)}</div></div></div>
+    <div class="shout">"${esc(f.shout)}"</div>
+    <div class="muted">필살기: ${esc(f.skill)}</div>
+    <div style="margin-top:10px">
+      <div class="row"><span>오늘 상대</span><b>${fight}</b></div>
+      ${opp ? `<div class="row"><span></span><b>${rankOf(opp) < i ? '이기면 순위가 올라가요' : '지면 자리를 내줘요'}</b></div>` : ''}
+      <div class="row"><span>어젯밤 결과</span><b>${res}</b></div>
+      <div class="row"><span>어젯밤 힘</span><b>${N(D.power[k])}</b></div>
+      <div class="row"><span>우리 지역 댓글왕</span><b>${king && king.users ? '@' + esc(king.users[0]) + ' · ' + N(king.count) + '개' : '아직 없어요'}</b></div>
+    </div>
+    <div class="btns">
+      <button class="btn" id="copy">"${k}" 복사</button>
+      <a class="btn go" href="${latest}" target="_blank" rel="noopener">댓글 달러 가기</a>
+    </div>`;
+  $('me').classList.add('on'); paintIcons($('me'));
+  $('copy').onclick = () => { const b = $('copy'); (navigator.clipboard ? navigator.clipboard.writeText(k) : Promise.reject()).then(() => b.textContent = '복사했어요!', () => b.textContent = k); };
+}
+$('pick').innerHTML = D.order.slice().sort((a, b) => a.localeCompare(b, 'ko')).map(k => `<button class="chip" data-k="${k}" aria-pressed="false">${icon(k)}${k}</button>`).join('');
+$('pick').onclick = e => { const b = e.target.closest('.chip'); if (b) show(b.dataset.k); };
+paintIcons(document);
+</script>
+<script>
+// ---------- 릴스와 같은 그림 도구 (reel.html의 글자·상자·씨름장·씨름꾼을 작은 화면에 맞춰 옮김) ----------
+const DARK = '#1a1430', GOLD = '#f2c14e', YEL = '#ffe14d', HONG = '#e8372f', CHEONG = '#2f6fe0', PAPERC = '#fff8e6', INKC = '#2b1d14', WHITE = '#ffffff', F5 = [HONG, '#ffd34d', CHEONG, WHITE, '#17a88a'];
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const hash = (a, b = 0) => { let x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x); };
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), lerp = (a, b, t) => a + (b - a) * t, ease = t => { t = clamp(t); return t * t * (3 - 2 * t); };
+const COLS = D.order.map(col);
+let ctx;
+const tcache = {};
+function glyphs(text, color) {
+  const key = text + '|' + color; if (tcache[key]) return tcache[key];
+  const c = document.createElement('canvas'), x = c.getContext('2d');
+  x.font = '12px G11'; c.width = Math.max(1, Math.ceil(x.measureText(text).width)); c.height = 14;
+  x.font = '12px G11'; x.fillStyle = '#fff'; x.fillText(text, 0, 11);
+  const im = x.getImageData(0, 0, c.width, c.height), d = im.data, [r, g, b] = hex(color);
+  for (let i = 0; i < d.length; i += 4) { const on = d[i + 3] > 140; d[i] = r; d[i + 1] = g; d[i + 2] = b; d[i + 3] = on ? 255 : 0; }
+  x.putImageData(im, 0, 0); return tcache[key] = c;
+}
+const tw = (t, k = 1) => glyphs(t, '#ffffff').width * k;
+function T(text, x, y, k = 1, color = WHITE, align = 0, ol = DARK) {
+  const g = glyphs(text, color); x = Math.round(x - g.width * k * align); y = Math.round(y);
+  if (ol) { const o = glyphs(text, ol); for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1], [0, 2], [1, 2], [-1, 2]]) ctx.drawImage(o, x + dx * k, y + dy * k, g.width * k, 14 * k); }
+  ctx.drawImage(g, x, y, g.width * k, 14 * k);
+}
+function box(x, y, w, h, fill, border = GOLD) {
+  x = Math.round(x); y = Math.round(y); w = Math.round(w); h = Math.round(h);
+  ctx.fillStyle = DARK; ctx.fillRect(x - 3, y - 3, w + 6, h + 6); ctx.fillStyle = border; ctx.fillRect(x - 2, y - 2, w + 4, h + 4); ctx.fillStyle = fill; ctx.fillRect(x, y, w, h);
+}
+function banner(text, k, y, f, cx = 180) { const w = tw(text, k) + 24; box(cx - w / 2, y, w, 14 * k + 10, '#b3261e', GOLD); T(text, cx, y + 5, k, f % 20 < 10 ? PAPERC : YEL, 0.5); }
+function oval(cx, cy, rx, ry, c) { ctx.fillStyle = c; for (let dy = -ry; dy < ry; dy += 2) { const h = Math.round(rx * Math.sqrt(1 - ((dy + 1) / ry) ** 2)); ctx.fillRect(Math.round(cx - h), Math.round(cy + dy), h * 2, 2); } }
+const SPC = {};
+function spr(k, x, y, s, walk = 0, happy = 0) { const key = k + walk + happy, c = SPC[key] || (SPC[key] = SPRITE(k, walk, happy)), w = Math.round(20 * s); ctx.drawImage(c, Math.round(x - w / 2), Math.round(y - w + s * 2), w, w); }
+function wr(k, x, y, s, o = {}) {
+  x = Math.round(x); y = Math.round(y);
+  if (!o.air) { ctx.fillStyle = 'rgba(90,60,20,.28)'; ctx.fillRect(Math.round(x - 7 * s), y - Math.round(s), Math.round(14 * s), Math.round(2 * s)); }
+  ctx.save();
+  if (o.spin != null) { ctx.translate(x, y - Math.round(8 * s)); ctx.rotate(o.spin); ctx.translate(0, Math.round(8 * s)); } else { ctx.translate(x, y); if (o.rot) ctx.rotate(o.rot); }
+  spr(k, 0, 0, s, o.walk, o.happy);
+  if (o.belt) { const r = v => Math.round(v * s), d = o.dir || 1;
+    ctx.fillStyle = DARK; ctx.fillRect(r(-6.6), r(-4.5), r(13.2), r(3)); ctx.fillRect(d > 0 ? r(3.6) : r(-6.6), r(-4.5), r(3), r(5.2));
+    ctx.fillStyle = o.belt; ctx.fillRect(r(-6), r(-4), r(12), r(2)); ctx.fillRect(d > 0 ? r(4.2) : r(-6), r(-4), r(1.8), r(4.2)); }
+  ctx.restore();
+}
+function puff(x, y, f, n = 4) { for (let i = 0; i < n; i++) { const q = (f * 2 + i * 5) % 16, w = 6 - (q >> 2); ctx.fillStyle = i % 2 ? '#a87f45' : '#fff1cc'; ctx.fillRect(Math.round(x + (hash(i, 71) - 0.5) * 22), Math.round(y - 3 - q * 0.7), w, w); } }
+function skyline(f, H, top) {   // 하늘·구름·오방색 깃발
+  ctx.fillStyle = '#7ecbff'; ctx.fillRect(0, 0, 360, H); ctx.fillStyle = '#b5e2ff'; ctx.fillRect(0, 0, 360, 26);
+  for (let i = 0; i < 3; i++) { const x = Math.round(((i * 170 + f * 0.4) % 480) - 80), y = 30 + i * 11; ctx.fillStyle = WHITE; ctx.fillRect(x, y, 46, 8); ctx.fillRect(x + 10, y - 6, 24, 6); }
+  for (let i = 0; i < 18; i++) {
+    const x = i * 21 - 4, y = top - 24 + Math.round(Math.sin(i / 17 * Math.PI) * 10 + Math.sin(f * 0.15 + i) * 1.5);
+    ctx.fillStyle = DARK; ctx.fillRect(x - 2, y - 2, 25, 2);
+    for (let k = 0; k < 7; k++) { ctx.fillStyle = F5[i % 5]; ctx.fillRect(x + 2 + k, y + k * 2, 14 - k * 2, 2); }
+  }
+}
+function stands(f, top, rows) {   // 관중석
+  ctx.fillStyle = '#4a3a8a'; ctx.fillRect(0, top, 360, rows * 16 + 4);
+  for (let r = 0; r < rows; r++) for (let i = 0; i < 25; i++) {
+    const x = 2 + i * 15 + (r % 2) * 7, y = top + 5 + r * 16 - Math.round(Math.abs(Math.sin((f + i * 3 + r * 5) * 0.2)) * 3);
+    ctx.fillStyle = DARK; ctx.fillRect(x - 1, y - 1, 10, 17); ctx.fillStyle = '#ffe0c0'; ctx.fillRect(x, y, 8, 7); ctx.fillStyle = COLS[(i * 7 + r * 3) % COLS.length]; ctx.fillRect(x, y + 7, 8, 8);
+  }
+}
+function arena(f, cy, rx, ry, H) {
+  const top = cy - ry - 82, fl = cy - ry - 4;
+  skyline(f, top, top); stands(f, top, 5);
+  ctx.fillStyle = '#2a8f7e'; ctx.fillRect(0, fl, 360, H - fl); ctx.fillStyle = '#237a6c'; for (let y = fl + 8; y < H; y += 16) ctx.fillRect(0, y, 360, 2);
+  oval(180, cy + 8, rx + 4, ry + 2, '#1c6257'); oval(180, cy + 4, rx, ry, '#9a6f38'); oval(180, cy, rx, ry, '#c99a55'); oval(180, cy, rx - 8, ry - 6, '#f2d9a0');
+  for (let i = 0; i < 50; i++) { const a = hash(i, 61) * Math.PI * 2, r = Math.sqrt(hash(i, 62)); ctx.fillStyle = i % 3 ? '#e2c588' : '#fff1cc'; ctx.fillRect(Math.round(180 + Math.cos(a) * r * (rx - 16)), Math.round(cy + Math.sin(a) * r * (ry - 10)), 3, 2); }
+}
+
+// ---------- 머리 그림: 1위와 2위가 샅바를 맞잡고 선 씨름장 ----------
+const sky = $('sky'), skx = sky.getContext('2d'); skx.imageSmoothingEnabled = false;
+function drawSky(f) {
+  ctx = skx; skyline(f, 176, 120); stands(f, 120, 4);
+  const a = D.order[0], b = D.order[1], bob = Math.sin(f * 0.15) * 1.2;
+  wr(a, 160, 172 + bob, 2.4, { rot: .2, belt: CHEONG, dir: 1, walk: Math.floor(f / 12) % 2 });
+  wr(b, 200, 172 - bob, 2.4, { rot: -.2, belt: HONG, dir: -1, walk: Math.floor(f / 12) % 2 });
+  banner('전국 천하장사', 3, 26, f);
+  T('댓글로 겨루는 17개 시도 씨름 대회', 180, 86, 1, WHITE, .5);
+}
+
+// ---------- 샅바 싸움 미니게임: 연타로 밀기 → 금색 칸 타이밍으로 메치기, 3판 2선승 ----------
+const MOVES = ['들배지기', '밭다리걸기', '잡채기', '엉덩배지기', '안다리걸기', '뒤집기'];
+const G = { me: null, op: null, st: 'idle', pos: 0, my: 0, their: 0, needle: 0, zone: .5, t: 0, fall: 0, winner: null, move: '', msg: '', push: 0 };
+const cv = $('ring'), gx = cv.getContext('2d'), btn = $('gtap'); gx.imageSmoothingEnabled = false;
+const SFX = {}, AC = window.AudioContext || window.webkitAudioContext, ac = AC ? new AC() : null; let muted = false;
+try { muted = localStorage.getItem('jangsa_mute') === '1'; } catch (e) {}
+if (ac) ['push', 'chance', 'slam', 'win', 'lose', 'start'].forEach(n => fetch('sfx/' + n + '.mp3').then(r => r.arrayBuffer()).then(b => new Promise((ok, no) => ac.decodeAudioData(b, ok, no))).then(buf => SFX[n] = buf).catch(() => {}));
+function play(n, v = 1) { if (muted || !ac || !SFX[n]) return; if (ac.state === 'suspended') ac.resume(); const s = ac.createBufferSource(), g = ac.createGain(); g.gain.value = v; s.buffer = SFX[n]; s.connect(g); g.connect(ac.destination); s.start(); }
+addEventListener('pointerdown', () => { if (ac && ac.state === 'suspended') ac.resume(); });
+const sndLabel = () => { $('gsnd').textContent = muted ? '소리 꺼짐 (눌러서 켜기)' : '소리 켜짐'; $('gsnd').setAttribute('aria-pressed', !muted); };
+sndLabel(); $('gsnd').onclick = () => { muted = !muted; try { localStorage.setItem('jangsa_mute', muted ? '1' : '0'); } catch (e) {} sndLabel(); };
+const say = (m, b) => { G.msg = m; if (b) btn.textContent = b; if (m) $('glive').textContent = m; };
+let REC = { win: 0, streak: 0, best: 0 }; try { Object.assign(REC, JSON.parse(localStorage.getItem('jangsa_rec') || '{}')); } catch (e) {}
+const showRec = () => $('grec').textContent = REC.win ? `지금까지 ${REC.win}번 우승 · 연승 ${REC.streak} · 최고 ${REC.best}연승` : '';
+showRec(); $('gcm').href = latest;
+const pickOther = () => { const o = D.order.filter(x => x !== G.me && x !== G.op); return o[Math.floor(Math.random() * o.length)]; };
+function setPlayer(k) { G.me = k; const p = D.pairs.find(p => p.includes(k)); G.op = p ? p.find(x => x !== k) : pickOther(); resetMatch(); }
+function resetMatch() { G.st = 'idle'; G.my = G.their = 0; G.pos = 0; G.fall = 0; G.winner = null; say('시작을 눌러!', '시작'); }
+function startRound() { $('gshare').classList.remove('on'); play('start', .8); G.st = 'push'; G.pos = 0; G.fall = 0; G.winner = null; say('마구 눌러!', '밀어!'); }
+function endRound(w) { if (navigator.vibrate && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) navigator.vibrate(w === G.me ? [30, 40, 80] : 120); G.st = 'fall'; G.winner = w; G.fall = 0; G.move = MOVES[Math.floor(Math.random() * MOVES.length)]; w === G.me ? G.my++ : G.their++; say('', '...'); }
+function tap() {
+  if (!G.me) { $('pick').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (G.st === 'over') { resetMatch(); startRound(); return; }
+  if (G.st === 'idle') return startRound();
+  if (G.st === 'push') {
+    G.pos += .055; G.push = 8; play('push', .5);
+    if (G.pos >= 1) { play('chance'); G.st = 'aim'; G.pos = 1; G.t = 0; G.zone = .15 + Math.random() * .7; say('지금! 금색에서 눌러!', '메쳐!'); }
+    return;
+  }
+  if (G.st === 'aim') {
+    if (Math.abs(G.needle - G.zone) < .1) endRound(G.me);
+    else { G.st = 'push'; G.pos = .3; say('빗나갔다! 다시 밀어!', '밀어!'); }
+  }
+}
+btn.addEventListener('pointerdown', e => { e.preventDefault(); tap(); });
+cv.addEventListener('pointerdown', e => { if (G.st === 'push' || G.st === 'aim') { e.preventDefault(); tap(); } });
+$('gsh').onclick = () => {
+  const t = G.my === 2 ? `전국 천하장사 샅바 싸움에서 ${G.me}로 ${G.op}를 ${G.my}:${G.their}로 메쳤다! 너도 해봐` : `전국 천하장사 샅바 싸움에서 ${G.op}에게 졌다… 복수해 줄 사람?`;
+  const b = $('gsh'), url = location.href.split('#')[0];
+  if (navigator.share) navigator.share({ title: '전국 천하장사', text: t, url }).catch(() => {});
+  else (navigator.clipboard ? navigator.clipboard.writeText(t + ' ' + url) : Promise.reject()).then(() => b.textContent = '복사했어요!', () => b.textContent = '복사가 안 돼요');
+};
+addEventListener('keydown', e => { if (e.code === 'Space' && G.st !== 'idle' && G.st !== 'over') { e.preventDefault(); tap(); } });
+$('gopp').onclick = () => { if (G.me) { G.op = pickOther(); resetMatch(); } };
+
+function step(dt, now) {
+  const lvl = 1 + .3 * (G.my + G.their);
+  if (G.push > 0) G.push--;
+  if (G.st === 'push') {
+    const surge = Math.sin(now / 350) > .75 ? .4 : 0;   // 상대가 가끔 확 밀어붙임
+    G.pos -= (.18 * lvl + surge) * dt;
+    if (G.pos <= -1) endRound(G.op);
+  } else if (G.st === 'aim') {
+    G.t += dt; G.needle = .5 + .5 * Math.sin(G.t * 3 * lvl);
+    if (G.t > 3) { G.st = 'push'; G.pos = .3; say('놓쳤다! 다시 밀어!', '밀어!'); }
+  } else if (G.st === 'fall') {
+    const was = G.fall; G.fall += dt; if (was < .62 && G.fall >= .62) play('slam');
+    if (G.fall > 1.8) {
+      if (G.my === 2 || G.their === 2) { G.st = 'over'; const won = G.my === 2; play(won ? 'win' : 'lose'); REC.win += won; REC.streak = won ? REC.streak + 1 : 0; REC.best = Math.max(REC.best, REC.streak); try { localStorage.setItem('jangsa_rec', JSON.stringify(REC)); } catch (e) {} showRec(); $('gsh').textContent = '자랑하기'; $('gshare').classList.add('on'); say(G.my === 2 ? `${G.me} 승리! 진짜 판은 댓글로!` : `${G.op}에게 졌다! 댓글로 갚아주자!`, '다시 하기'); }
+      else { G.st = 'idle'; say(`${G.my} 대 ${G.their}, 다음 판!`, '다음 판'); }
+    }
+  }
+}
+function drawRing(f) {
+  ctx = gx; const H = 300, cy = 238, s = 3.4, gap = 8.2 * s, fy = cy + 14;
+  const land = G.st === 'fall' && G.fall > .62 && G.fall < .8;
+  ctx.save(); if (land) ctx.translate(Math.round((hash(f, 3) - .5) * 10), Math.round((hash(f, 5) - .5) * 6));
+  arena(f, cy, 168, 46, H);
+  if (!G.me) { box(40, 150, 280, 40, DARK); T('위에서 우리 지역을 골라 주세요', 180, 162, 1, YEL, .5); ctx.restore(); return; }
+  const cx = 180 + G.pos * 46, wk = G.st === 'push' ? Math.floor(f / 3) % 2 : 0, bob = Math.sin(f * .6) * s * .3;
+  const pa = { k: G.me, x: cx - gap, dir: 1, belt: CHEONG }, pb = { k: G.op, x: cx + gap, dir: -1, belt: HONG };
+  if (G.st === 'fall') {
+    const L = G.winner === G.me ? pb : pa, Wn = L === pa ? pb : pa, u = clamp(G.fall / .7);
+    wr(Wn.k, Wn.x, fy, s, { rot: Wn.dir * .1, belt: Wn.belt, dir: Wn.dir, happy: u >= 1 });
+    // 진 쪽: 번쩍 들려 한 바퀴 돌며 등으로 떨어진다
+    const lx = lerp(L.x, L.x - L.dir * 70, ease(u)), ly = fy - Math.sin(u * Math.PI) * 70;
+    wr(L.k, lx, ly, s, { spin: -L.dir * u * Math.PI * 1.5, belt: L.belt, dir: L.dir, air: u < 1 });
+    if (u >= 1 && G.fall < 1.2) puff(lx, fy, f, 6);
+    if (G.fall > .3) { const z = Math.max(0, .55 - (G.fall - .3)); banner(G.move + '!', z > .35 ? 4 : 3, 94, f); T(G.winner + ' 한 판!', 180, 172, 2, G.winner === G.me ? YEL : '#ff9a8f', .5); }
+  } else {
+    const myLean = G.push > 0 ? .36 : .2, opLean = G.st === 'push' && G.push === 0 ? .32 : .2;
+    wr(G.me, pa.x, fy + bob, s, { rot: myLean, belt: CHEONG, dir: 1, walk: wk, happy: G.st === 'over' && G.my === 2 });
+    wr(G.op, pb.x, fy - bob, s, { rot: -opLean, belt: HONG, dir: -1, walk: wk, happy: G.st === 'over' && G.their === 2 });
+    if (G.st === 'push') puff(G.push > 0 ? pb.x + 26 : pa.x - 26, fy, f);
+  }
+  ctx.restore();
+  // 위쪽 안내: 점수, 밀기 게이지, 말
+  box(6, 6, 348, 24, DARK, GOLD);
+  T(G.me + ' ' + G.my, 14, 10, 1, WHITE, 0, null); T(G.their + ' ' + G.op, 346, 10, 1, WHITE, 1, null);
+  ctx.fillStyle = '#3a2f5a'; ctx.fillRect(110, 15, 140, 6); ctx.fillStyle = G.pos >= 0 ? CHEONG : HONG;
+  const pw = Math.round(G.pos * 70); ctx.fillRect(pw >= 0 ? 180 : 180 + pw, 15, Math.abs(pw), 6); ctx.fillStyle = YEL; ctx.fillRect(179, 12, 2, 12);
+  if (G.msg) T(G.msg, 180, 40, 2, G.st === 'over' ? YEL : WHITE, .5);
+  if (G.st === 'aim') {
+    box(30, 82, 300, 16, '#3a2f5a', GOLD);
+    ctx.fillStyle = YEL; ctx.fillRect(30 + (G.zone - .1) * 300, 82, 60, 16);
+    const nx = Math.round(30 + G.needle * 300); ctx.fillStyle = DARK; ctx.fillRect(nx - 3, 76, 6, 28); ctx.fillStyle = WHITE; ctx.fillRect(nx - 1, 78, 2, 24);
+  }
+  if (G.st === 'idle' && G.my + G.their === 0) { box(118, 92, 124, 30, DARK, GOLD); T(G.me + ' 대 ' + G.op, 180, 98, 1, YEL, .5); }
+}
+
+const VIS = { sky: true, ring: true };
+if (window.IntersectionObserver) { const io = new IntersectionObserver(es => es.forEach(e => VIS[e.target.id] = e.isIntersecting)); io.observe(sky); io.observe(cv); }
+let last = performance.now(), F = 0;
+function loop(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now; F++;
+  step(dt, now); if (VIS.sky) drawSky(F); if (VIS.ring) drawRing(F);
+  requestAnimationFrame(loop);
+}
+document.fonts.load('12px G11').then(() => {
+  if (!G.me && mine && D.factions[mine]) show(mine);
+  requestAnimationFrame(loop);
+});
+</script>
+</body>
+</html>
