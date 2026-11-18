@@ -115,6 +115,7 @@ footer{text-align:center;color:#e6fff8;font-size:13px;margin-top:36px}
     <ul>
       <li>릴스 댓글에 내 지역 이름을 적으면 힘 1</li>
       <li>팔로워가 단 댓글은 힘 2</li>
+      <li>격차 보정: 맞붙는 두 지역 중 어젯밤 힘이 약했던 쪽은 차이만큼 힘이 커져요(최대 3배)</li>
       <li>바로 위 순위 지역과 붙어서 힘이 더 크면 자리를 바꿔요</li>
       <li>1~4위 백두급, 5~8위 한라급, 9~12위 금강급, 13~17위 태백급</li>
       <li>지역 비하 댓글은 지웁니다</li>
@@ -134,7 +135,7 @@ const CLS = i => i < 4 ? '백두급' : i < 8 ? '한라급' : i < 12 ? '금강급
 const col = k => D.factions[k].color, rankOf = k => D.order.indexOf(k);
 const reel = c => 'https://www.instagram.com/reel/' + c + '/';
 const latest = reel(D.reels[D.reels.length - 1]);
-const tag = k => D.boost[k] ? `<span class="seal">${D.boost[k] === 2 ? '응원 x2' : '설욕 x1.5'}</span>` : '';
+const tag = k => D.boost[k] ? `<span class="seal">${D.kind === 'handicap' ? '보정 x' + D.boost[k] : D.boost[k] === 2 ? '응원 x2' : '설욕 x1.5'}</span>` : '';
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // 지역 캐릭터 아이콘: 릴스와 같은 픽셀 캐릭터
 const icon = (k, big) => `<canvas class="ic${big ? ' l' : ''}" data-k="${k}" width="20" height="20"></canvas>`;
@@ -165,9 +166,10 @@ $('rank').innerHTML = D.order.map((k, i) => {
 }).join('');
 
 $('ev').innerHTML = `<ul>
+  ${D.kind === 'handicap' ? `<li><span class="seal" style="margin:0">격차 보정</span> ${Object.entries(D.boost).map(([k, m]) => k + ' x' + m).join(', ')}</li>` : ''}
   ${D.cheer ? `<li><span class="seal" style="margin:0">응원 지역 룰렛</span> ${D.cheer} 오늘 힘 2배</li>` : ''}
   ${D.revenge.length ? `<li><span class="seal" style="margin:0">설욕전</span> 두 판 연속 진 ${D.revenge.join(', ')} 오늘 힘 1.5배</li>` : ''}
-  <li>응원 지역은 매일 태백급 중에서 룰렛으로 뽑아요</li></ul>`;
+  ${D.kind === 'handicap' ? '<li>어젯밤 힘이 약했던 쪽이 차이만큼(최대 3배) 힘을 더 받아요</li>' : '<li>11-19 판부터는 응원 룰렛·설욕전 대신 격차 보정으로 바뀌어요</li>'}</ul>`;
 
 $('eps').innerHTML = D.reels.map((c, i) => `<a class="btn" href="${reel(c)}" target="_blank" rel="noopener">${i + 1}화</a>`).join('');
 
